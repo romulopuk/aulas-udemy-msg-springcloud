@@ -2,7 +2,10 @@ package com.dimotta.msavaliadorcredito.application;
 
 import com.dimotta.msavaliadorcredito.application.ex.DadosClienteNotFoundException;
 import com.dimotta.msavaliadorcredito.application.ex.ErroComunicacaoMicroservicesException;
+import com.dimotta.msavaliadorcredito.application.ex.ErroSolicitacaoCartaoException;
 import com.dimotta.msavaliadorcredito.domain.model.DadosAvaliacao;
+import com.dimotta.msavaliadorcredito.domain.model.DadosSolicitacaoEmissaoCartao;
+import com.dimotta.msavaliadorcredito.domain.model.ProtocoloSolicitacaoCartao;
 import com.dimotta.msavaliadorcredito.domain.model.RetornoAvaliacaoCliente;
 import com.dimotta.msavaliadorcredito.domain.model.SituacaoCliente;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +59,18 @@ public class AvaliadorCreditoController {
         } catch (ErroComunicacaoMicroservicesException e) {
             return ResponseEntity.status(
                     HttpStatus.resolve(e.getStatus())).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("solicitacoes-cartoes")
+    public ResponseEntity solicitarCartao(
+            @RequestBody DadosSolicitacaoEmissaoCartao dados) {
+        try{
+            ProtocoloSolicitacaoCartao protocoloSolicitacaoCartao =
+                    avaliadorCreditoService.solicitarEmissaoCartao(dados);
+            return ResponseEntity.ok(protocoloSolicitacaoCartao);
+        }catch (ErroSolicitacaoCartaoException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

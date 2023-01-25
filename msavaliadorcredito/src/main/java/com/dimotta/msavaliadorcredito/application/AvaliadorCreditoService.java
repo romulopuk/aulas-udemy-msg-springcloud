@@ -2,11 +2,13 @@ package com.dimotta.msavaliadorcredito.application;
 
 import com.dimotta.msavaliadorcredito.application.ex.DadosClienteNotFoundException;
 import com.dimotta.msavaliadorcredito.application.ex.ErroComunicacaoMicroservicesException;
+import com.dimotta.msavaliadorcredito.application.ex.ErroSolicitacaoCartaoException;
 import com.dimotta.msavaliadorcredito.domain.model.Cartao;
 import com.dimotta.msavaliadorcredito.domain.model.CartaoAprovado;
 import com.dimotta.msavaliadorcredito.domain.model.CartaoCliente;
 import com.dimotta.msavaliadorcredito.domain.model.DadosCliente;
 import com.dimotta.msavaliadorcredito.domain.model.DadosSolicitacaoEmissaoCartao;
+import com.dimotta.msavaliadorcredito.domain.model.ProtocoloSolicitacaoCartao;
 import com.dimotta.msavaliadorcredito.domain.model.RetornoAvaliacaoCliente;
 import com.dimotta.msavaliadorcredito.domain.model.SituacaoCliente;
 import com.dimotta.msavaliadorcredito.infra.clients.CartoesResourceClient;
@@ -98,12 +100,15 @@ public class AvaliadorCreditoService {
         }
     }
 
-    public Object solicitarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados) {
+    public ProtocoloSolicitacaoCartao solicitarEmissaoCartao(
+            DadosSolicitacaoEmissaoCartao dados) {
         try {
             emissaoCartaoPublisher.solicitarCartao(dados);
             var protocolo = UUID.randomUUID().toString();
+            return new ProtocoloSolicitacaoCartao(protocolo);
 
         }catch (Exception e){
+            throw new ErroSolicitacaoCartaoException(e.getMessage());
 
         }
     }
