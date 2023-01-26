@@ -8,11 +8,13 @@ import com.dimotta.mscartoes.infra.repository.ClienteCartaoRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EmissaoCartaoSubscriber {
 
     private final CartaoRepository cartaoRepository;
@@ -36,7 +38,8 @@ public class EmissaoCartaoSubscriber {
             clienteCartaoRepository.save(clienteCartao);
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("Erro ao receber solicitação de emissão de cartão: {}",
+                    e.getMessage());
         }
     }
 }
